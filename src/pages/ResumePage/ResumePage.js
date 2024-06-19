@@ -75,20 +75,22 @@ function ResumePage({ baseUrl }) {
     const [skills, setSkills] = useState([]);
     const [careers, setCareers] = useState([]);
     const [projects, setProjects] = useState([]);
+    const [certificates, setCertificates] = useState([]);
 
     // 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await call(`/api/resumes/${resumeId}`, "GET");
-                const { title, languages, awards, skills, careers, projects } = response;
+                const { title, languages, awards, skills, careers, certificates, projects } = response;
                 setResumeTitle(title || "");
                 setLanguages(languages || []);
                 setAwards(awards || []);
                 setSkills(skills || []);
                 setCareers(careers || []);
                 setProjects(projects || []);
-                setActiveSections(['Language', 'Award', 'Skill', 'Career', 'Project']);  // 항상 섹션을 활성화
+                setCertificates(certificates || []);
+                setActiveSections(['Language', 'Award', 'Skill', 'Career', 'Project', 'Certificate']);  // 항상 섹션을 활성화
             } catch (error) {
                 console.error("Failed to fetch resume data", error);
             }
@@ -115,7 +117,8 @@ function ResumePage({ baseUrl }) {
                 awards: awards,
                 skills: skills,
                 careers: careers,
-                projects: projects
+                projects: projects,
+                certificates: certificates,
             };
 
             await call(`/api/resumes/${resumeId}/save`, "POST", data);
@@ -162,6 +165,7 @@ function ResumePage({ baseUrl }) {
                             skills={skills} setSkills={setSkills}
                             careers={careers} setCareers={setCareers}
                             projects={projects} setProjects={setProjects}
+                            certificates={certificates} setCertificates={setCertificates}
                             resumeId={resumeId}
                         />
                     </div>
