@@ -1,3 +1,4 @@
+/*
 // 백엔드 API 기본 URL 설정
 
 let backendHost;
@@ -9,3 +10,9 @@ if (hostname === "localhost") {
 }
 
 export const API_BASE_URL = `${backendHost}`;
+*/
+
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+export { API_BASE_URL };
