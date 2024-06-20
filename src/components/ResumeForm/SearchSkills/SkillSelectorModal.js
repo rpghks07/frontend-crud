@@ -24,7 +24,7 @@ const GridDiv = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 10px;
-`;
+`
 
 const Input = styled.input`
     height: 20px;
@@ -32,13 +32,12 @@ const Input = styled.input`
     border-style: solid;
     border-color: darkgrey;
     border-radius: 5px;
-`;
+`
 
 Modal.setAppElement('#root');
 
 const SkillSelectorModal = ({ isOpen, closeModal, selectSkill, skillsData }) => {
     const [searchTerm, setSearchTerm] = useState("");
-    
     useEffect(() => {
         if (!isOpen) {
             setSearchTerm("");
@@ -49,22 +48,22 @@ const SkillSelectorModal = ({ isOpen, closeModal, selectSkill, skillsData }) => 
 
     return (
         <Modal isOpen={isOpen} onRequestClose={closeModal} style={customStyles}>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{display:"flex", justifyContent:"center"}}>
                 <Input type="text" placeholder="Search skills"
-                    onChange={e => setSearchTerm(e.target.value)}
-                    value={searchTerm} />
+                       onChange={e => setSearchTerm(e.target.value)}
+                       value={searchTerm}/>
             </div>
-            <GridDiv style={{ marginTop: 10 }}>
+            <GridDiv style={{marginTop: 10}}>
                 {filteredSkills.map(skill => (
                     <div key={skill.id}
-                        onClick={() => selectSkill(skill)}
-                        style={{ padding: '10px', cursor: 'pointer', textAlign: 'center' }}>
+                         onClick={() => selectSkill(skill)}
+                         style={{ padding: '10px', cursor: 'pointer', textAlign: 'center' }}>
                         <img src={skill.icon} alt={skill.name} style={{ width: 40, height: 40 }} />
                     </div>
                 ))}
             </GridDiv>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-                <button onClick={closeModal} style={{ cursor: "pointer", padding: 8, backgroundColor: "grey", color: "white", border: "none", borderRadius: 5 }}>Close</button>
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 10}}>
+                <button onClick={closeModal} style={{ cursor: "pointer", padding: 8, backgroundColor:"grey", color:"white", border: "none", borderRadius: 5}}>Close</button>
             </div>
         </Modal>
     );

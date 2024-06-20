@@ -3,7 +3,7 @@ import SectionContainer from "../../ResumeCommon/SectionContainer";
 import AddRecord from "../../ResumeCommon/AddRecord";
 import SkillRecord from "./SkillRecord";
 
-const Skill = ({ skills, setSkills }) => {
+const Skill = ({ skills, setSkills, resumeId }) => {
     // 컴포넌트가 마운트될 때 local storage 에서 이전에 입력된 데이터들을 불러옴
     useEffect(() => {
         const savedSkills = JSON.parse(localStorage.getItem('skills'));
@@ -46,6 +46,7 @@ const Skill = ({ skills, setSkills }) => {
                     skill={skill}
                     onRemove={() => removeSkill(index)}
                     onUpdate={updateSkill}
+                    resumeId={resumeId}
                 />
             ))}
             <div style={{ height: 10 }}></div>

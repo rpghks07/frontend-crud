@@ -22,7 +22,7 @@ const Button = styled.div`
     display: flex;
     justify-content: center;
     margin-right: 10px;
-`
+`;
 
 const SkillsContainer = styled.div`
     border-style: dashed;
@@ -34,42 +34,45 @@ const SkillsContainer = styled.div`
     min-height: 40px;
     max-height: 40px;
     flex-wrap: wrap;
-`
+`;
 
 Modal.setAppElement('#root');
 
-const SkillSearchComponent = ({ singleSelection = false, onSkillChange, selectedSkills }) => {
+const SkillSearchComponent = ({ singleSelection = false, onSkillChange, selectedSkills = "" }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
 
     const handleSelectSkill = (skill) => {
+        let updatedSkills;
         if (singleSelection) {
-            onSkillChange([skill]);
+            updatedSkills = skill.icon;
         } else {
-            const updatedSkills = [...selectedSkills, skill];
-            onSkillChange(updatedSkills);
+            const skillsArray = selectedSkills ? selectedSkills.split(', ') : [];
+            if (!skillsArray.includes(skill.icon)) {
+                skillsArray.push(skill.icon);
+            }
+            updatedSkills = skillsArray.join(', ');
         }
+        onSkillChange(updatedSkills);
         closeModal();
     };
 
-    const handleRemoveSkill = (skillId) => {
-        const updatedSkills = selectedSkills.filter(skill => skill.id !== skillId);
-        onSkillChange(updatedSkills);                       // Skill&Career&Project Record 컴포넌트로 전달
+    const handleRemoveSkill = (skillIcon) => {
+        const skillsArray = selectedSkills.split(', ').filter(icon => icon !== skillIcon);
+        onSkillChange(skillsArray.join(', '));
     };
 
     return (
-        <div style={{display:"flex", alignItems:"center"}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
             <Button onClick={openModal}>검색</Button>
             {selectedSkills && (
                 <SkillsContainer>
-                    {selectedSkills.map((skill, index) => (
-                        <img key={index}
-                             src={skill.icon}
-                             alt={skill.name}
-                             style={{ width: '35px', height: '35px', margin: '5px' }}
-                             onClick={() => handleRemoveSkill(skill.id)} />
+                    {selectedSkills.split(', ').map((skillIcon, index) => (
+                        <div key={index} onClick={() => handleRemoveSkill(skillIcon)} style={{ cursor: 'pointer', width: 40, height: 40, position: 'relative' }}>
+                            <img src={skillIcon} alt={`skill-${index}`} style={{ width: '100%', height: '100%' }} />
+                        </div>
                     ))}
                 </SkillsContainer>
             )}

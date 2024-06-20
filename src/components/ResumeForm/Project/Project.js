@@ -3,19 +3,16 @@ import SectionContainer from "../../ResumeCommon/SectionContainer";
 import ProjectRecord from "./ProjectRecord";
 import AddRecord from "../../ResumeCommon/AddRecord";
 
-// Project 컴포넌트: 프로젝트 항목을 관리
-const Project = () => {
-    const [projects, setProjects] = useState([
-        { id: 0, title: '', date: '', isCurrent: false, intro: '', techStack: '', description: '' }
-    ]);
-
+const Project = ({ projects, setProjects, resumeId }) => {
     // 컴포넌트가 마운트될 때 local storage 에서 이전에 입력된 데이터들을 불러옴
     useEffect(() => {
         const savedProjects = JSON.parse(localStorage.getItem('projects'));
         if (savedProjects) {
             setProjects(savedProjects);
+        } else {
+            setProjects([{ id: null, title: '', startDate: '', endDate: '', isCurrent: false, intro: '', techStack: '', description: '' }]);
         }
-    }, []);
+    }, [setProjects]);
 
     // 입력 데이터가 변경될 때마다 local storage 에 저장
     useEffect(() => {
@@ -26,7 +23,7 @@ const Project = () => {
     const addProject = () => {
         setProjects(prev => [
             ...prev,
-            { id: prev.length, title: '', date: '', isCurrent: false, intro: '', techStack: '', description: '' }
+            { id: prev.length, title: '', startDate: '', endDate: '', isCurrent: false, intro: '', techStack: '', description: '' }
         ]);
     };
 
@@ -49,6 +46,7 @@ const Project = () => {
                     project={project}
                     onRemove={() => removeProject(index)}
                     onUpdate={updateProject}
+                    resumeId={resumeId}
                 />
             ))}
             <div style={{ height: 10 }}></div>

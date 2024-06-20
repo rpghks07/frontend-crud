@@ -3,15 +3,14 @@ import SectionContainer from "../../ResumeCommon/SectionContainer";
 import AddRecord from "../../ResumeCommon/AddRecord";
 import CareerRecord from "./CareerRecord";
 
-// Career 컴포넌트: 경력 항목을 관리
-const Career = ({ careers, setCareers }) => {
+const Career = ({ careers, setCareers, resumeId }) => {
     // 컴포넌트가 마운트될 때 local storage 에서 이전에 입력된 데이터들을 불러옴
     useEffect(() => {
         const savedCareers = JSON.parse(localStorage.getItem('careers'));
         if (savedCareers) {
             setCareers(savedCareers);
         } else {
-            setCareers([{ id: 0, company: '', department: '', date: '', isCurrent: false, techStack: '', description: '' }]);
+            setCareers([{ id: null, company: '', department: '', startDate: '', endDate: '', isCurrent: false, techStack: '', description: '' }]);
         }
     }, [setCareers]);
 
@@ -24,7 +23,7 @@ const Career = ({ careers, setCareers }) => {
     const addCareer = () => {
         setCareers(prev => [
             ...prev,
-            { id: prev.length, company: '', department: '', date: '', isCurrent: false, techStack: '', description: '' }
+            { id: prev.length, company: '', department: '', startDate: '', endDate: '', isCurrent: false, techStack: '', description: '' }
         ]);
     };
 
@@ -47,6 +46,7 @@ const Career = ({ careers, setCareers }) => {
                     career={career}
                     onRemove={() => removeCareer(index)}
                     onUpdate={updateCareer}
+                    resumeId={resumeId}
                 />
             ))}
             <div style={{ height: 10 }}></div>
