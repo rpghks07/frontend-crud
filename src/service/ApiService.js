@@ -4,17 +4,17 @@ import { API_BASE_URL } from "../app-config";
 const ACCESS_TOKEN = "ACCESS_TOKEN";
 
 // API 호출 함수
-export function call(api, method, request) {
+export function call(api, method, request, requireAuth = false) {
   let headers = new Headers({
     "Content-Type": "application/json", // 요청 헤더 설정
   });
 
   // 로컬 스토리지에서 ACCESS TOKEN 가져오기
-  const accessToken = localStorage.getItem(ACCESS_TOKEN);
-  console.log('Fetched access token:', accessToken); // 디버깅용 콘솔 로그
-
-  if (accessToken && accessToken !== null) {
-    headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
+  if (requireAuth) {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    if (accessToken && accessToken !== null) {
+      headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
+    }
   }
 
   let options = {
@@ -27,25 +27,22 @@ export function call(api, method, request) {
     options.body = JSON.stringify(request); // 요청 본문 설정
   }
 
-  console.log('Request options:', options); // 디버깅용 콘솔 로그
-
   return fetch(options.url, options)
-      .then((response) =>
-          response.text().then((text) => {
-            console.log('Response:', text); // 디버깅용 콘솔 로그
-            if (!response.ok) {
-              return Promise.reject(text);
-            }
-            return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
-          })
-      )
-      .catch((error) => {
-        console.error(error);
-        if (error.status === 403) {
-          window.location.href = "/login";
+    .then((response) =>
+      response.text().then((text) => {
+        if (!response.ok) {
+          return Promise.reject(text);
         }
-        return Promise.reject(error);
-      });
+        return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
+      })
+    )
+    .catch((error) => {
+      console.error(error);
+      if (error.status === 403) {
+        window.location.href = "/login";
+      }
+      return Promise.reject(error);
+    });
 }
 
 // 로그인 처리 함수
@@ -60,18 +57,11 @@ export function signin(userDTO) {
 
 // 로그아웃 처리 함수
 export function signout() {
-  localStorage.setItem(ACCESS_TOKEN, null); // 토큰 삭제
+  localStorage.removeItem(ACCESS_TOKEN); // 토큰 삭제
   window.location.href = "/login"; // 로그인 페이지로 리디렉트
 }
 
 // 회원가입 처리 함수
 export function signup(userDTO) {
-  console.log('Signup request payload:', userDTO); // 디버깅용 콘솔 로그
-  return call("/auth/signup", "POST", userDTO)
-    .then((response) => {
-      console.log('Signup response:', response); // 디버깅용 콘솔 로그
-    })
-    .catch((error) => {
-      console.error('Signup failed:', error); // 오류 로그
-    });
+  return call("/auth/signup", "POST", userDTO, false);
 }
