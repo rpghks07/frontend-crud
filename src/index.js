@@ -9,7 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 
 // 환경변수를 사용해 API URL 설정
 const BASE_URL = process.env.REACT_APP_API_URL;
-// const API_BASE_URL = process.env.REACT_APP_API_URL;
+console.log('BASE_URL:', BASE_URL);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
