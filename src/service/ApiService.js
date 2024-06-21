@@ -11,6 +11,8 @@ export function call(api, method, request) {
 
   // 로컬 스토리지에서 ACCESS TOKEN 가져오기
   const accessToken = localStorage.getItem(ACCESS_TOKEN);
+  console.log('Fetched access token:', accessToken); // 디버깅용 콘솔 로그
+
   if (accessToken && accessToken !== null) {
     headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
   }
@@ -25,9 +27,12 @@ export function call(api, method, request) {
     options.body = JSON.stringify(request); // 요청 본문 설정
   }
 
+  console.log('Request options:', options); // 디버깅용 콘솔 로그
+
   return fetch(options.url, options)
       .then((response) =>
           response.text().then((text) => {
+            console.log('Response:', text); // 디버깅용 콘솔 로그
             if (!response.ok) {
               return Promise.reject(text);
             }
@@ -61,5 +66,12 @@ export function signout() {
 
 // 회원가입 처리 함수
 export function signup(userDTO) {
-  return call("/auth/signup", "POST", userDTO); // 회원가입 요청
+  console.log('Signup request payload:', userDTO); // 디버깅용 콘솔 로그
+  return call("/auth/signup", "POST", userDTO)
+    .then((response) => {
+      console.log('Signup response:', response); // 디버깅용 콘솔 로그
+    })
+    .catch((error) => {
+      console.error('Signup failed:', error); // 오류 로그
+    });
 }
