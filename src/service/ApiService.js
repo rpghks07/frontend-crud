@@ -30,6 +30,7 @@ export function call(api, method, request, requireAuth = false) {
   return fetch(options.url, options)
     .then((response) =>
       response.text().then((text) => {
+        console.log("Response Text:", text);
         if (!response.ok) {
           return Promise.reject(text);
         }
@@ -37,7 +38,7 @@ export function call(api, method, request, requireAuth = false) {
       })
     )
     .catch((error) => {
-      console.error(error);
+      console.error("Fetch error:", error);
       if (error.status === 403) {
         window.location.href = "/login";
       }
