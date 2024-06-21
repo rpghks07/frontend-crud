@@ -1,20 +1,20 @@
-// ApiService.js: API 호출 및 인증 처리 함수 정의
-
 import { API_BASE_URL } from "../app-config";
 const ACCESS_TOKEN = "ACCESS_TOKEN";
 
 // API 호출 함수
-export function call(api, method, request) {
+export function call(api, method, request, authRequired = true) {
   let headers = new Headers({
     "Content-Type": "application/json", // 요청 헤더 설정
   });
 
-  // 로컬 스토리지에서 ACCESS TOKEN 가져오기
-  const accessToken = localStorage.getItem(ACCESS_TOKEN);
-  console.log("Access Token from localStorage:", accessToken);
-  
-  if (accessToken && accessToken !== null) {
-    headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
+  if (authRequired) {
+    // 로컬 스토리지에서 ACCESS TOKEN 가져오기
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    console.log("Access Token from localStorage:", accessToken);
+
+    if (accessToken && accessToken !== "null") {
+      headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
+    }
   }
 
   let options = {
@@ -27,25 +27,25 @@ export function call(api, method, request) {
     options.body = JSON.stringify(request); // 요청 본문 설정
   }
 
- console.log('Sending request to:', options.url);
+  console.log('Sending request to:', options.url);
 
   return fetch(options.url, options)
-      .then((response) =>
-          response.text().then((text) => {
-            console.log("Response Text:", text);
-            if (!response.ok) {
-              return Promise.reject(text);
-            }
-            return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
-          })
-      )
-      .catch((error) => {
-        console.error("Fetch error:", error);
-        if (error.status === 403) {
-          window.location.href = "/login";
+    .then((response) =>
+      response.text().then((text) => {
+        console.log("Response Text:", text);
+        if (!response.ok) {
+          return Promise.reject(text);
         }
-        return Promise.reject(error);
-      });
+        return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
+      })
+    )
+    .catch((error) => {
+      console.error("Fetch error:", error);
+      if (error.status === 403) {
+        window.location.href = "/login";
+      }
+      return Promise.reject(error);
+    });
 }
 
 // 로그인 처리 함수
@@ -66,5 +66,5 @@ export function signout() {
 
 // 회원가입 처리 함수
 export function signup(userDTO) {
-  return call("/auth/signup", "POST", userDTO); // 회원가입 요청
+  return call("/auth/signup", "POST", userDTO, false); // 회원가입 요청 시 authRequired를 false로 설정
 }
