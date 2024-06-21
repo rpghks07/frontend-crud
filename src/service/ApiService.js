@@ -4,17 +4,15 @@ import { API_BASE_URL } from "../app-config";
 const ACCESS_TOKEN = "ACCESS_TOKEN";
 
 // API 호출 함수
-export function call(api, method, request, requireAuth = false) {
+export function call(api, method, request) {
   let headers = new Headers({
     "Content-Type": "application/json", // 요청 헤더 설정
   });
 
   // 로컬 스토리지에서 ACCESS TOKEN 가져오기
-  if (requireAuth) {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN);
-    if (accessToken && accessToken !== null) {
-      headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
-    }
+  const accessToken = localStorage.getItem(ACCESS_TOKEN);
+  if (accessToken && accessToken !== null) {
+    headers.append("Authorization", "Bearer " + accessToken); // 토큰이 있을 경우 헤더에 추가
   }
 
   let options = {
@@ -27,23 +25,25 @@ export function call(api, method, request, requireAuth = false) {
     options.body = JSON.stringify(request); // 요청 본문 설정
   }
 
+ console.log('Sending request to:', options.url);
+
   return fetch(options.url, options)
-    .then((response) =>
-      response.text().then((text) => {
-        console.log("Response Text:", text);
-        if (!response.ok) {
-          return Promise.reject(text);
+      .then((response) =>
+          response.text().then((text) => {
+            console.log("Response Text:", text);
+            if (!response.ok) {
+              return Promise.reject(text);
+            }
+            return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
+          })
+      )
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        if (error.status === 403) {
+          window.location.href = "/login";
         }
-        return text ? JSON.parse(text) : {}; // JSON 응답이 비어있을 경우 처리
-      })
-    )
-    .catch((error) => {
-      console.error("Fetch error:", error);
-      if (error.status === 403) {
-        window.location.href = "/login";
-      }
-      return Promise.reject(error);
-    });
+        return Promise.reject(error);
+      });
 }
 
 // 로그인 처리 함수
@@ -58,11 +58,11 @@ export function signin(userDTO) {
 
 // 로그아웃 처리 함수
 export function signout() {
-  localStorage.removeItem(ACCESS_TOKEN); // 토큰 삭제
+  localStorage.setItem(ACCESS_TOKEN, null); // 토큰 삭제
   window.location.href = "/login"; // 로그인 페이지로 리디렉트
 }
 
 // 회원가입 처리 함수
 export function signup(userDTO) {
-  return call("/auth/signup", "POST", userDTO, false);
+  return call("/auth/signup", "POST", userDTO); // 회원가입 요청
 }
